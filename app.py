@@ -14,15 +14,18 @@ scaler = joblib.load('scaler.joblib')
 def home():
     return "Sales Prediction API Running"
 
-@app.route('/predict', methods=['POST'])
+@app.route('/predict', methods=['GET','POST'])
 def predict():
-    data = request.get_json()
-    mrp = data['Item_MRP']
+    if request.method == 'POST':
+        data = request.get_json()
+        mrp = data['Item_MRP']
+    else:
+        mrp = request.args.get('Item_MRP')
 
-    scaled = scaler.transform([[mrp]])
+    scaled = scaler.transform([[float(mrp)]])
     prediction = model.predict(scaled)
 
-    return jsonify({'prediction': float(prediction[0])})
+    return {'prediction': float(prediction[0])}
 
 if __name__ == '__main__':
     app.run()
