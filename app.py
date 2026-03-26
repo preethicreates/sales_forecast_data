@@ -1,9 +1,5 @@
-import os 
-print("CURRENT DIRECTORY:",os.getcwd())
-print("FILES AVAILABLE:",os.listdir())
-from flask import Flask, request, jsonify
+from flask import Flask, request, render_template
 import joblib
-import numpy as np
 
 app = Flask(__name__)
 
@@ -12,20 +8,15 @@ scaler = joblib.load('scaler.joblib')
 
 @app.route('/')
 def home():
-    return "Sales Prediction API Running"
+    return render_template('index.html')
 
-@app.route('/predict', methods=['GET','POST'])
+@app.route('/predict', methods=['POST'])
 def predict():
-    if request.method == 'POST':
-        data = request.get_json()
-        mrp = data['Item_MRP']
-    else:
-        mrp = request.args.get('Item_MRP')
-
-    scaled = scaler.transform([[float(mrp)]])
+    mrp = float(request.form['Item_MRP'])
+    scaled = scaler.transform([[mrp]])
     prediction = model.predict(scaled)
 
-    return {'prediction': float(prediction[0])}
+    return render_template('index.html', prediction=round(prediction[0], 2))
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run()
