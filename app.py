@@ -1,3 +1,6 @@
+import os 
+print("CURRENT DIRECTORY:",os.getcwd())
+print("FILES AVAILABLE:",os.listdir())
 from flask import Flask, request, jsonify
 import joblib
 import numpy as np
